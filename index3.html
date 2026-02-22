@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>Timed Quiz App</title>
+        <style>
+                body {
+                        font-family: Arial, sans-serif;
+                }
+
+                .quiz-container {
+                        width: 400px;
+                        margin: 40px auto;
+                        text-align: center;
+                }
+
+                .question {
+                        background-color: #f0f0f0;
+                        padding: 20px;
+                        border: 1px solid #ddd;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                }
+
+                .options {
+                        list-style: none;
+                        margin: 0;
+                        padding: 0;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                }
+
+                .option {
+                        background-color: #f7f7f7;
+                        padding: 10px;
+                        border-bottom: 1px solid #ddd;
+                        cursor: pointer;
+                }
+
+                .option:hover {
+                        background-color: #e0e0e0;
+                }
+
+                .timer {
+                        font-size: 24px;
+                        font-weight: bold;
+                        margin-top: 10px;
+                }
+
+                .score {
+                        font-size: 18px;
+                        color: #666;
+                        margin-bottom: 20px;
+                }
+
+                .progress-bar {
+                        background-color: #f0f0f0;
+                        height: 20px;
+                        border-radius: 10px;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+                }
+
+                .progress-bar-fill {
+                        background-color: #4CAF50;
+                        height: 100%;
+                        border-radius: 10px;
+                        transition: width 0.5s ease-in-out;
+                }
+
+                .restart-button {
+                        background-color: #4CAF50;
+                        color: #fff;
+                        padding: 10px 20px;
+                        border: none;
+                        border-radius: 10px;
+                        cursor: pointer;
+                }
+
+                .restart-button:hover {
+                        background-color: #3e8e41;
+                }
+        </style>
+</head>
+<body>
+        <div class="quiz-container">
+                <h1>Timed Quiz App</h1>
+                <section class="question">
+                        <h2 id="question-text"></h2>
+                        <ul class="options" id="option-list"></ul>
+                        <p id="timer-text" class="timer"></p>
+                        <button id="next-button" class="restart-button">Next</button>
+                        <button id="restart-button" class="restart-button">Restart</button>
+                </section>
+                <div id="progress-bar" class="progress-bar">
+                        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+                <p id="score-text" class="score"></p>
+        </div>
+
+        <script>
+                const questions = [
+                        {
+                                text: "What is the capital of France?",
+                                options: ["Paris", "Berlin", "London", "Rome"],
+                                correctAnswer: 0
+                        },
+                        {
+                                text: "What is the largest planet in our solar system?",
+                                options: ["Earth", "Saturn", "Jupiter", "Uranus"],
+                                correctAnswer: 2
+                        },
+                ];
+
+                let timeLeft = 20;
+                let intervalId;
+
+                let score = 0;
+                let currentQuestion = 0;
+                let totalQuestions = questions.length;
+
+                setupQuiz();
+
+                function setupQuiz() {
+                        displayQuestion();
+                        startTimer();
+                }
+
+                function displayQuestion() {
+                        const questionText = questions[currentQuestion].text;
+                        document.getElementById("question-text").textContent = questionText;
+                        const optionList = document.getElementById("option-list");
+                        optionList.innerHTML = "";
+                        for (let i = 0; i < questions[currentQuestion].options.length; i++) {
+                                const option = questions[currentQuestion].options[i];
+                                const optionElement = document.createElement("li");
+                                optionElement.textContent = option;
+                                optionElement.className = "option";
+                                optionList.appendChild(optionElement);
+                        }
+                }
+
+                function startTimer() {
+                        intervalId = setInterval(() => {
+                                timeLeft--;
+                                document.getElementById("timer-text").textContent = `Time's Up! ${timeLeft} seconds remaining`;
+                                if (timeLeft <= 0) {
+                                        endQuiz();
+                                }
+                        }, 1000);
+                }
+
+                function endQuiz() {
+                        clearInterval(intervalId);
+                        displayFinalScreen();
+                }
+
+                function displayFinalScreen() {
+                        const scoreText = `Your Score: ${score}/${totalQuestions}`;
+                        document.getElementById("score-text").textContent = scoreText;
+                        const progressBarFill = document.getElementById("progress-bar-fill");
+                        progressBarFill.style.width = `${(score / totalQuestions) * 100}%`;
+                        alert(`Quiz finished! Your final score is ${score}/${totalQuestions}`);
+                }
+
+                document.getElementById("next-button").addEventListener("click", () => {
+                        currentQuestion++;
+                        if (currentQuestion >= totalQuestions) {
+                                endQuiz();
+                        } else {
+                                displayQuestion();
+                                timeLeft = 20;
+                                document.getElementById("timer-text").textContent = `Time's Up! 20 seconds remaining`;
+                        }
+                });
+
+                document.getElementById("restart-button").addEventListener("click", () => {
+                        currentQuestion = 0;
+                        score = 0;
+                        setupQuiz();
+                });
+        </script>
+</body>
+</html>
